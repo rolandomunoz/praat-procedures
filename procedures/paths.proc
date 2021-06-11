@@ -1,7 +1,7 @@
 # Some common operation with paths. It is inspired in os.path package from python
 #
 # Written by Rolando Munoz A. (23 Feb 2020)
-# Version: 1.0
+# Version: 1.0.1
 # This script is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -71,6 +71,18 @@ procedure swap_extension: .path$, .new_extension$
   .return$ = .root$ + "." + .new_extension$
 endproc
 
+#! ~~~ params
+#! in:
+#!   .path$ (string): the pathname of a file.
+#!   .target_extension$ (string): the new extension of the file.
+#!   .target_dirname$ (string): the new directory of the folder's file.
+#!   .rel_dirname (integer): 1 if the new folder directory is relative to the filepath. 0 if the new folder directory is an absolute path.
+#! out:
+#!   .return$ (string): a new path
+#! ~~~
+#!
+#!  Modify a pathname of a file. Change the extension and folder directory.
+#!
 procedure get_pair_path: .path$, .target_extension$, .target_dirname$, .rel_dirname
   @basename: .path$
   @swap_extension: basename.return$, .target_extension$
@@ -87,11 +99,29 @@ procedure get_pair_path: .path$, .target_extension$, .target_dirname$, .rel_dirn
   .return$ = join_many_paths.return$
 endproc
 
+#! ~~~ params
+#! in:
+#!   .path$ (string): the path name of a file.
+#! out:
+#!   .return$ (string): the directory name of a pathname path.
+#! ~~~
+#!
+#!  Returns the directory name of a pathname path. The first element of the pair returned by passing path to the procedure @split_path
+#!
 procedure dirname: .path$
   @split_path: .path$
   .return$ = split_path.return$#[1]
 endproc
 
+#! ~~~ params
+#! in:
+#!   .path$ (string): the path name of a file.
+#! out:
+#!   .return$ (string): the base name of a pathname path.
+#! ~~~
+#!
+#!  Returns the base name of a pathname path. The second element of the pair returned by passing path to the procedure @split_path
+#!
 procedure basename: .path$
   @split_path: .path$
   .return$ = split_path.return$#[2]
@@ -99,7 +129,7 @@ endproc
 
 #! ~~~ params
 #! in:
-#!   .path$ (string$): the name of a file or folder directory.
+#!   .path$ (string): the name of a file or folder directory.
 #! out:
 #!   .return$# (string vector): a list containing the root and extension of a path.
 #! ~~~
