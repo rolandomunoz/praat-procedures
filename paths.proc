@@ -1,6 +1,7 @@
 # Some common operation with paths. It is inspired in os.path package from python
 #
 # Written by Rolando Munoz A. (23 Feb 2020)
+# Version: 1.0
 # This script is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
@@ -9,14 +10,33 @@
 # A copy of the GNU General Public License is available at
 # <http://www.gnu.org/licenses/>.
 
+#! ~~~ params
+#!	in:
+#!		.path$ (string$): the name of folder directory which you want to create.
+#!	folder_directory:
+#!		out:
+#!			a set of folders created recursively.
+#! ~~~
+#!
+#! Given a path, create a directory recursively.
+#!
 procedure make_dirs: .path$
   @iterate_path: .path$
 	for .i to size(iterate_path.return$#)
 		.path$= iterate_path.return$#[.i]
-		createDirectory(.path$)
+		createFolder(.path$)
 	endfor
 endproc
 
+#! ~~~ params
+#! in:
+#!	 .path$ (string$): the name of a file or directory.
+#! out:
+#!	 .return$# (vector$#): a list of all paths from source to target.
+#! ~~~
+#!
+#! It returns a vector variable where each item contains the components path from source to target. For example, the procedure @iterate_path: "/home/rolando/Documents/data" returns {"/home", "/home/rolando", "/home/rolando/Documents", "/home/rolando/Documents/data"}
+#!
 procedure iterate_path: .path$
 	.objects# = selected#()
 	@unixpath: .path$
@@ -26,6 +46,9 @@ procedure iterate_path: .path$
 	for .i to .nstrings
 		.name$ = object$[.str, .i]
 		if .i == 1
+			if startsWith(.path$, "/")
+			 .name$ = "/" + .name$
+			endif
 			.dirnames$#[.i] = .name$
 		else
 			.dirnames$#[.i] = .dirnames$#[.i-1] + "/" + .name$
@@ -74,8 +97,16 @@ procedure basename: .path$
 	.return$ = split_path.return$#[2]
 endproc
 
+#! ~~~ params
+#! in:
+#!	 .path$ (string$): the name of a file or folder directory.
+#! out:
+#!	 .return$# (string vector): a list containing the root and extension of a path.
+#! ~~~
+#!
+#!	Split the pathname path into a pair (root, ext) such that root + ext == path, and ext is empty or begins with a period and contains at most one period. Leading periods on the basename are ignored.
+#!
 procedure splitext_path: .path$
-	# Split the pathname path into a pair (root, ext) such that root + ext == path, and ext is empty or begins with a period and contains at most one period. Leading periods on the basename are ignored
 	@unixpath: .path$
 	@basename: unixpath.return$
 	if index(basename.return$, ".")
@@ -92,12 +123,31 @@ procedure splitext_path: .path$
 	.return$# = {.root$, .ext$}
 endproc
 
+#! ~~~ params
+#! in:
+#!	 .path1$ (string): first path component (eg. /home/user).
+#!	 .path2$ (string): second path component (eg. Desktop/data).
+#! out:
+#!	 .return$ (string): a new path.
+#! ~~~
+#!
+#! Join many components as a path.
+#!
 procedure join_paths: .path1$, .path2$
 	.new_path$ = .path1$ + "/" + .path2$
 	@unixpath: .new_path$
 	.return$ = unixpath.return$
 endproc
 
+#! ~~~ params
+#! in:
+#!	 .path$ (string vector): a list of path components to join.
+#! out:
+#!	 .return$# (string): a path with all components joined.
+#! ~~~
+#!
+#! Join many components as a path.
+#!
 procedure join_many_paths: .paths$#
 	.new_path$ = ""
 	for .i to size(.paths$#)
@@ -109,8 +159,17 @@ procedure join_many_paths: .paths$#
 	.return$ = unixpath.return$
 endproc
 
+#! ~~~ params
+#! in:
+#!	 .path$ (string$): the name of a file or folder directory.
+#! out:
+#!	 .return$# (string vector): a list containing the head and tail of a path. The tail is the last pathname component and head is everything leading up to that. The tail part will never contain a slash; if path ends in a slash, tail will be empty.
+#! ~~~
+#!
+#! Split the pathname path into a pair (head, tail). The tail is the last pathname component and head is everything leading up to that. The tail part will never contain a slash; if path ends in a slash, tail will be empty.
+#!
 procedure split_path: .path$
-	#Split the pathname path into a pair, (head, tail) where tail is the last pathname component and head is everything leading up to that. The tail part will never contain a slash; if path ends in a slash, tail will be empty
+
 	@unixpath: .path$
 	.normpath$ = unixpath.return$
 
@@ -124,14 +183,30 @@ procedure split_path: .path$
 	endif
 endproc
 
+#!	~~~ params
+#!	in:
+#!		.path$ (string): the name of a file or folder directory.
+#!	out:
+#!		.return$ (string): a path with only forward slashes. If any backslash, it is automatically replaced with a forward slash.
+#! ~~~
+#!
+#! Replace backslashes with forward slashes. Additionally, it removes double slashes.
+#!
 procedure unixpath: .path$
-	# On Windows, it converts forward slashes to backward slashes
 	.temp_path$ = replace$(.path$, "\", "/", 0)
 	.return$ = replace_regex$(.temp_path$, "/+", "/", 0)
 endproc
 
+#!	~~~ params
+#!	in:
+#!		.path$ (string): the name of a file or folder directory.
+#!	out:
+#!		.return$ (string): only backslashes (on Windows) or forward slashes (on UNIX based systems). Path slashes are replaced depending on the operating systems.
+#! ~~~
+#!
+#! Depending on the operating system, it returns all slashes from a path as forward slashes (on UNIX based syistems) or backward (on Windows).
+#!
 procedure normpath: .path$
-	# On Windows, it converts forward slashes to backward slashes
 	if windows
 		.return$ = replace$(.path$, "/", "\", 0)
 	else
