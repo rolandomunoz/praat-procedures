@@ -10,20 +10,6 @@
 # A copy of the GNU General Public License is available at
 # <http://www.gnu.org/licenses/>.
 
-procedure walk: .path$
-  @unixpath: .path$
-  path$ = unixpath.return$
-  folderNames$# = folderNames$#(.path$)
-  n_folders = size(folderNames$#)
-  while n_folders
-      appendInfoLine: folderNames$#
-  endwhile
-endproc
-
-procedure iterate_folders
-
-endproc
-
 #! ~~~ params
 #!  in:
 #!    .path$ (string$): the name of folder directory which you want to create.
